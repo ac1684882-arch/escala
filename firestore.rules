@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Função helper para verificar se é um usuário autenticado
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Regras para a coleção de usuários
+    match /usuarios/{userId} {
+      // Todos podem ler (necessário para login e visualização)
+      allow read: if true;
+      
+      // Apenas usuários autenticados podem criar/atualizar
+      // Em produção, você pode adicionar verificação de role de enfermeiro
+      allow write: if isSignedIn();
+    }
+    
+    // Regras para escalas
+    match /escalas/{escalaId} {
+      // Todos podem ler
+      allow read: if true;
+      
+      // Usuários autenticados podem criar/atualizar suas próprias escalas
+      allow create, update: if isSignedIn();
+      
+      // Apenas enfermeiros podem deletar (em produção, adicione verificação de role)
+      allow delete: if isSignedIn();
+    }
+    
+    // Regras para bloqueios
+    match /bloqueios/{bloqueioId} {
+      // Todos podem ler
+      allow read: if true;
+      
+      // Apenas usuários autenticados podem gerenciar bloqueios
+      // Em produção, restrinja apenas para enfermeiros
+      allow write: if isSignedIn();
+    }
+    
+    // Regras para configurações
+    match /configuracoes/{configId} {
+      // Todos podem ler
+      allow read: if true;
+      
+      // Apenas usuários autenticados podem modificar
+      // Em produção, restrinja apenas para enfermeiros
+      allow write: if isSignedIn();
+    }
+  }
+}

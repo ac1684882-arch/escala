@@ -1,0 +1,6 @@
+{
+  "name": "Escala de Maqueiros",
+  "description": "Sistema de escala e controle de folgas para maqueiros baseado nas regras da Prefeitura do Rio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

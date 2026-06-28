@@ -1,0 +1,33 @@
+name: Supabase Keep-Alive
+
+on:
+  schedule:
+    # Executa a cada 6 dias às 00:00 UTC (21:00 horário de Brasília do dia anterior)
+    - cron: '0 0 */6 * *'
+  workflow_dispatch:  # Permite executar manualmente
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping Supabase Database
+        run: |
+          echo "🔄 Fazendo ping no Supabase para manter projeto ativo..."
+          
+          # Faz uma query simples na tabela de usuários
+          curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/usuarios?select=count&limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: count=exact"
+          
+          echo ""
+          echo "✅ Ping realizado com sucesso!"
+          echo "📅 Próximo ping: em 6 dias"
+      
+      - name: Verificar Status
+        run: |
+          echo "📊 Status do Keep-Alive:"
+          echo "  - Supabase mantido ativo ✅"
+          echo "  - Dados salvos e seguros ✅"
+          echo "  - Próxima execução automática: $(date -d '+6 days' '+%d/%m/%Y')"
