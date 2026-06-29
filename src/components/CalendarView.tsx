@@ -228,7 +228,7 @@ export default function CalendarView({
               </span>
               <input
                 type="text"
-                placeholder="Buscar por maqueiro..."
+                placeholder="Buscar por funcionário..."
                 data-testid="calendar-search"
                 className="w-full pl-9 pr-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-[#005C9E] shadow-sm"
                 value={searchQuery}

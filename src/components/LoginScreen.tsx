@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Key, Lock, Mail, ShieldCheck, Stethoscope, UserCheck, UserPlus } from 'lucide-react';
 import { Usuario, UserRole, UserShift, StretcherType } from '../types';
 
@@ -18,8 +18,7 @@ type AuthMode = 'login' | 'register';
 const normalizeEmail = (email: string) => email.trim().toLowerCase();
 
 export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }: LoginScreenProps) {
-  const hasAdmin = useMemo(() => allUsers.some((user) => user.role === UserRole.ENFERMEIRO), [allUsers]);
-  const [authMode, setAuthMode] = useState<AuthMode>(hasAdmin ? 'login' : 'register');
+  const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [loginInput, setLoginInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [registerName, setRegisterName] = useState('');
@@ -27,8 +26,6 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
   const [registerPassword, setRegisterPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const isCreatingAdmin = !hasAdmin;
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,12 +83,12 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
 
     const timestamp = Date.now();
     const newUser: Usuario = {
-      id: `${isCreatingAdmin ? 'admin' : 'func'}-${timestamp}`,
+      id: `func-${timestamp}`,
       nome: registerName.trim(),
-      matricula: `${isCreatingAdmin ? 'ADM' : 'FUNC'}-${timestamp}`,
+      matricula: `FUNC-${timestamp}`,
       login: normalizedEmail,
       senha: registerPassword,
-      role: isCreatingAdmin ? UserRole.ENFERMEIRO : UserRole.MAQUEIRO,
+      role: UserRole.MAQUEIRO,
       turno: UserShift.MANHA,
       tipo: StretcherType.NORMAL,
       ativo: true,
@@ -110,7 +107,7 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
     }
   };
 
-  const showLogin = authMode === 'login' && hasAdmin;
+  const showLogin = authMode === 'login';
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center bg-gray-50 p-4 sm:p-6 md:p-8">
@@ -122,40 +119,38 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
           <div className="inline-flex items-center justify-center bg-white/10 p-3 rounded-full mb-3 backdrop-blur-sm">
             <ShieldCheck className="w-8 h-8 text-[#FFB300]" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Escala de Maqueiros</h2>
+          <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Escala de Funcionários</h2>
           <p className="text-xs text-blue-100 mt-1 font-medium">
             Acesso por e-mail para funcionários e administração da escala
           </p>
         </div>
 
-        {hasAdmin && (
-          <div className="grid grid-cols-2 bg-gray-50 border-b border-gray-100 p-2 gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setAuthMode('login');
-                setErrorMsg('');
-              }}
-              className={`py-2 rounded-lg text-xs font-bold uppercase transition ${
-                showLogin ? 'bg-[#005C9E] text-white shadow-sm' : 'text-gray-600 hover:bg-white'
-              }`}
-            >
-              Entrar
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setAuthMode('register');
-                setErrorMsg('');
-              }}
-              className={`py-2 rounded-lg text-xs font-bold uppercase transition ${
-                !showLogin ? 'bg-[#005C9E] text-white shadow-sm' : 'text-gray-600 hover:bg-white'
-              }`}
-            >
-              Criar Cadastro
-            </button>
-          </div>
-        )}
+        <div className="grid grid-cols-2 bg-gray-50 border-b border-gray-100 p-2 gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setAuthMode('login');
+              setErrorMsg('');
+            }}
+            className={`py-2 rounded-lg text-xs font-bold uppercase transition ${
+              showLogin ? 'bg-[#005C9E] text-white shadow-sm' : 'text-gray-600 hover:bg-white'
+            }`}
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setAuthMode('register');
+              setErrorMsg('');
+            }}
+            className={`py-2 rounded-lg text-xs font-bold uppercase transition ${
+              !showLogin ? 'bg-[#005C9E] text-white shadow-sm' : 'text-gray-600 hover:bg-white'
+            }`}
+          >
+            Criar Cadastro
+          </button>
+        </div>
 
         {showLogin ? (
           <form onSubmit={handleLoginSubmit} className="p-6 sm:p-8 space-y-5" id="form-login" data-testid="login-form">
@@ -223,9 +218,7 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
             )}
 
             <div className="bg-blue-50 border border-blue-100 text-blue-900 p-3 rounded-lg text-xs leading-relaxed">
-              {isCreatingAdmin
-                ? 'Primeiro acesso: crie o administrador usado pelos enfermeiros para liberar folgas e gerenciar funcionários.'
-                : 'Funcionário: crie seu cadastro com nome, e-mail e senha. O administrador poderá ajustar turno e regime depois.'}
+              Funcionário: crie seu cadastro com nome, e-mail e senha. O administrador poderá ajustar turno e regime depois.
             </div>
 
             <div className="space-y-1.5">
@@ -295,14 +288,14 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
               className="w-full bg-[#005C9E] hover:bg-[#004D85] disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg text-sm uppercase tracking-wider transition-all duration-150 shadow-md hover:shadow-lg active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
             >
               <UserPlus className="w-4 h-4 text-[#FFB300]" />
-              {isCreatingAdmin ? 'Criar Admin dos Enfermeiros' : 'Criar Cadastro'}
+              Criar Cadastro
             </button>
           </form>
         )}
 
         <div className="bg-gray-50 border-t border-gray-100 px-6 py-4 text-center">
           <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
-            Secretaria Municipal de Saúde do Rio de Janeiro
+            SUPER CENTRO CARIOCA DO OLHO (CCO)
           </p>
         </div>
       </div>

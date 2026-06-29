@@ -7,7 +7,7 @@ test.describe('Dashboard do Enfermeiro', () => {
   });
 
   test('deve exibir métricas do dashboard', async ({ page }) => {
-    await expect(page.getByTestId('metric-maqueiros-ativos')).toContainText('Maqueiros Ativos');
+    await expect(page.getByTestId('metric-maqueiros-ativos')).toContainText('Funcionários Ativos');
     await expect(page.getByTestId('metric-sabados-agendados')).toContainText('Sábados Agendados');
     await expect(page.getByTestId('metric-folgas-definidas')).toContainText('Folgas Definidas');
   });
@@ -33,7 +33,7 @@ test.describe('Dashboard do Enfermeiro', () => {
     await expect(page.getByTestId('shift-filter')).toHaveValue('manha');
   });
 
-  test('deve buscar maqueiro no calendário', async ({ page }) => {
+  test('deve buscar funcionário no calendário', async ({ page }) => {
     const calendar = page.getByTestId('calendar-view');
 
     await calendar.getByTestId('calendar-search').fill('E2E');
@@ -51,7 +51,7 @@ test.describe('Dashboard do Enfermeiro', () => {
   test('deve acessar aba de configurações', async ({ page }) => {
     await page.getByTestId('tab-configs').click();
 
-    await expect(page.getByText('Vagas de maqueiros normais por Sábado')).toBeVisible();
+    await expect(page.getByText('Vagas de funcionários normais por Sábado')).toBeVisible();
     await expect(page.getByText('Liberação Manual de Folgas')).toBeVisible();
   });
 });

@@ -1,4 +1,4 @@
-# 🎨 Documentação Frontend - Sistema de Escala de Maqueiros
+# 🎨 Documentação Frontend - Sistema de Escala de Funcionários
 
 ## 📦 **Stack Tecnológico**
 
@@ -125,7 +125,7 @@ interface LoginScreenProps {
 - Input de senha
 - Validação de credenciais
 - Opção de visualizar credenciais de teste
-- Design institucional (Prefeitura do Rio)
+- Design institucional (Super Centro Carioca do Olho (CCO))
 
 **Validação:**
 ```typescript
@@ -340,7 +340,7 @@ interface PrefeituraHeaderProps {
 ```
 
 **Elementos:**
-- Logo da Prefeitura do Rio (SVG)
+- Logo da Super Centro Carioca do Olho (CCO) (SVG)
 - Título institucional
 - Nome do usuário logado
 - Badge de role (Enfermeiro/Maqueiro)
@@ -351,7 +351,7 @@ interface PrefeituraHeaderProps {
 
 ## 🎨 **Design System**
 
-### **Cores (Prefeitura do Rio):**
+### **Cores (Super Centro Carioca do Olho (CCO)):**
 
 ```css
 /* Azul Rio (Principal) */

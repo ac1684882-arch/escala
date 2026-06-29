@@ -162,14 +162,14 @@ export default function NurseDashboard({
     <div className="space-y-6">
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Maqueiros */}
+        {/* Total Funcionários */}
         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4" data-testid="metric-maqueiros-ativos">
           <div className="bg-[#005C9E]/10 p-3 rounded-xl text-[#005C9E]">
             <Users className="w-6 h-6" />
           </div>
           <div>
             <div className="text-2xl font-black text-[#003B66]">{totalMaqueiros}</div>
-            <div className="text-xs text-gray-500 font-semibold uppercase">Maqueiros Ativos</div>
+            <div className="text-xs text-gray-500 font-semibold uppercase">Funcionários Ativos</div>
             <div className="text-[10px] text-gray-400 mt-0.5 font-medium">
               {normalMaqueiros.length} Normais • {fixedMaqueiros.length} Sáb. Fixo
             </div>
@@ -187,7 +187,7 @@ export default function NurseDashboard({
             </div>
             <div className="text-xs text-gray-500 font-semibold uppercase">Sábados Agendados</div>
             <div className="text-[10px] text-gray-400 mt-0.5 font-medium">
-              Escolhas feitas pelos maqueiros
+              Escolhas feitas pelos funcionários
             </div>
           </div>
         </div>
@@ -217,7 +217,7 @@ export default function NurseDashboard({
             <div className="text-sm font-extrabold text-[#003B66] flex items-center gap-1">
               {isFolgaUnlocked ? 'Folgas Liberadas' : 'Folgas Bloqueadas'}
             </div>
-            <div className="text-xs text-gray-500 font-semibold uppercase">Escolha do Maqueiro</div>
+            <div className="text-xs text-gray-500 font-semibold uppercase">Escolha do Funcionário</div>
             <div className="text-[10px] text-gray-400 mt-0.5 font-medium leading-relaxed">
               {config.folgasLiberadasManualmente
                 ? 'Admin liberou a escolha de folgas'
@@ -252,7 +252,7 @@ export default function NurseDashboard({
           }`}
         >
           <Users className="w-4 h-4" />
-          Gerenciar Maqueiros
+          Gerenciar Funcionários
         </button>
 
         <button
@@ -285,7 +285,7 @@ export default function NurseDashboard({
 
             <button
               onClick={() => {
-                if (window.confirm('Tem certeza de que deseja resetar TODAS as escolhas de escala dos maqueiros normais para este mês? Os profissionais terão de escolher novamente.')) {
+                if (window.confirm('Tem certeza de que deseja resetar TODAS as escolhas de escala dos funcionários normais para este mês? Os profissionais terão de escolher novamente.')) {
                   onResetEscalas();
                 }
               }}
@@ -331,7 +331,7 @@ export default function NurseDashboard({
             {/* Vagas por Sábado slider */}
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs font-bold text-gray-700">
-                <span className="uppercase tracking-wide">Vagas de maqueiros normais por Sábado</span>
+                <span className="uppercase tracking-wide">Vagas de funcionários normais por Sábado</span>
                 <span className="bg-[#005C9E]/10 text-[#005C9E] px-2.5 py-1 rounded-full text-xs font-black">
                   {config.vagasPorSabado} vagas por Sábado
                 </span>
@@ -345,7 +345,7 @@ export default function NurseDashboard({
                 onChange={(e) => handleVagasChange(Number(e.target.value))}
               />
               <p className="text-[11px] text-gray-500 font-medium">
-                Regula o limite de preenchimento por sábado. Ao atingir o limite, o sábado é bloqueado para os demais maqueiros.
+                Regula o limite de preenchimento por sábado. Ao atingir o limite, o sábado é bloqueado para os demais funcionários.
               </p>
             </div>
 
@@ -562,7 +562,7 @@ export default function NurseDashboard({
                 <div className="space-y-4">
                   {/* Select Stretcher */}
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-black text-gray-700 uppercase">Selecionar maqueiro normal</label>
+                    <label className="block text-[10px] font-black text-gray-700 uppercase">Selecionar funcionário normal</label>
                     <select
                       className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-xs font-bold text-gray-800"
                       value={selectedStretcherForManualEdit}

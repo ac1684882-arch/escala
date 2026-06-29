@@ -1,21 +1,21 @@
 import { test, expect } from '@playwright/test';
-import { E2E_MAQUEIRO_EMAIL, E2E_NURSE_EMAIL, login, openLogin } from './helpers/auth';
+import { ADMIN_EMAIL, ADMIN_PASSWORD, E2E_MAQUEIRO_EMAIL, login, openLogin } from './helpers/auth';
 
 test.describe('Sistema de Login', () => {
   test('deve exibir tela de login', async ({ page }) => {
     await openLogin(page);
 
-    await expect(page.getByRole('heading', { name: 'Prefeitura do Rio' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'SUPER CENTRO CARIOCA DO OLHO (CCO)' })).toBeVisible();
     await expect(page.getByTestId('login-input')).toBeVisible();
     await expect(page.getByTestId('password-input')).toBeVisible();
     await expect(page.getByTestId('login-button')).toBeVisible();
   });
 
   test('deve fazer login como enfermeiro', async ({ page }) => {
-    await login(page, E2E_NURSE_EMAIL);
+    await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
 
     await expect(page.getByTestId('nurse-dashboard')).toBeVisible();
-    await expect(page.getByTestId('metric-maqueiros-ativos')).toContainText('Maqueiros Ativos');
+    await expect(page.getByTestId('metric-maqueiros-ativos')).toContainText('Funcionários Ativos');
   });
 
   test('deve fazer login como maqueiro', async ({ page }) => {

@@ -1,6 +1,6 @@
-# Análise de Sistemas - Sistema de Escala de Maqueiros (Pref. Rio)
+# Análise de Sistemas - Sistema de Escala de Funcionários (CCO)
 
-Este documento descreve a especificação técnica e de negócios para o sistema de escala de maqueiros, concebido para substituir o controle manual em planilhas de Excel. O sistema segue a identidade visual e os padrões de operação da Prefeitura do Rio de Janeiro.
+Este documento descreve a especificação técnica e de negócios para o sistema de escala de funcionários, concebido para substituir o controle manual em planilhas de Excel. O sistema segue a identidade visual e os padrões de operação do Super Centro Carioca do Olho (CCO).
 
 ---
 
@@ -155,7 +155,7 @@ Para garantir a operação harmônica da escala, o sistema implementa de forma r
 
 ## 6. Sugestão de Layout e Identidade Visual
 
-O sistema adota o padrão estético oficial da **Prefeitura do Rio de Janeiro**:
+O sistema adota o padrão estético oficial do **Super Centro Carioca do Olho (CCO)**:
 
 - **Cores Principais**:
   - `Azul Rio` (`#005C9E`): Utilizado no cabeçalho institucional, botões de ação principal, e destaques.
@@ -164,8 +164,8 @@ O sistema adota o padrão estético oficial da **Prefeitura do Rio de Janeiro**:
   - `Vermelho/Laranja Administrativo` (`#C62828`): Usado para datas bloqueadas e alertas.
   - `Branco Puro` (`#FFFFFF`) e `Cinza de Contraste` (`#F8F9FA`): Fundos principais das tabelas e do calendário grande para máxima legibilidade.
 
-- **Logotipo da Prefeitura**:
-  - Um brasão estilizado e moderno da Prefeitura do Rio de Janeiro é renderizado em SVG de alta fidelidade no topo esquerdo do cabeçalho, acompanhado das inscrições oficiais: *"Prefeitura do Rio - Secretaria Municipal de Saúde"*.
+- **Logotipo do CCO**:
+  - Um brasão estilizado e moderno do Super Centro Carioca do Olho (CCO) é renderizado em SVG de alta fidelidade no topo esquerdo do cabeçalho, acompanhado da identificação da escala de funcionários.
 
 - **Calendário Grande**:
   - Um grid robusto com transições suaves via `motion`, onde cada célula exibe o número do dia, os maqueiros escalados naquele dia (divididos por turno), e as folgas agendadas.
@@ -183,7 +183,7 @@ O sistema adota o padrão estético oficial da **Prefeitura do Rio de Janeiro**:
    - Carga inicial (seed) automática com 5 maqueiros da manhã (normais), 5 maqueiros da tarde (3 normais e 2 fixos de sábado), e 1 enfermeiro supervisor.
 
 3. **Fase 3: Componentes de UI Institucionais**:
-   - Criação do cabeçalho da Prefeitura do Rio com brasão SVG.
+   - Criação do cabeçalho da Super Centro Carioca do Olho (CCO) com brasão SVG.
    - Formulário de login responsivo com seletor rápido para homologação e testes imediatos.
 
 4. **Fase 4: Calendário Central Inteligente**:

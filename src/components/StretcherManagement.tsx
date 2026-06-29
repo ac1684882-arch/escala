@@ -143,7 +143,7 @@ export default function StretcherManagement({
           <div>
             <h2 className="font-sans font-black text-xl text-[#003B66]">Controle de Pessoal</h2>
             <p className="text-xs text-gray-500">
-              Cadastre e gerencie a equipe de maqueiros e enfermeiros do hospital.
+              Cadastre e gerencie a equipe de funcionários e supervisores do CCO.
             </p>
           </div>
         </div>
@@ -223,12 +223,12 @@ export default function StretcherManagement({
                 value={role}
                 onChange={(e) => setRole(e.target.value as UserRole)}
               >
-                <option value={UserRole.MAQUEIRO}>Maqueiro</option>
+                <option value={UserRole.MAQUEIRO}>Funcionário</option>
                 <option value={UserRole.ENFERMEIRO}>Enfermeiro / Supervisor</option>
               </select>
             </div>
 
-            {/* Only for Maqueiros: Tipo */}
+            {/* Only for funcionários: Tipo */}
             {role === UserRole.MAQUEIRO && (
               <div className="space-y-1">
                 <label className="block text-[10px] font-black text-gray-700 uppercase tracking-wider">Tipo de Regime *</label>
@@ -358,7 +358,7 @@ export default function StretcherManagement({
                           ? 'bg-amber-50 text-amber-800 border-amber-100'
                           : 'bg-blue-50 text-blue-800 border-blue-100'
                       }`}>
-                        Maqueiro {user.tipo === StretcherType.FIXO_SABADO ? 'Fixo' : 'Normal'}
+                        Funcionário {user.tipo === StretcherType.FIXO_SABADO ? 'Fixo' : 'Normal'}
                       </span>
                     )}
                   </td>

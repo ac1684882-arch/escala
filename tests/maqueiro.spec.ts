@@ -28,7 +28,7 @@ test.describe('Dashboard do Maqueiro', () => {
     await expect(page.getByTestId('folga-selector')).toContainText(/Folga Compensatória|folgas bloqueado/i);
   });
 
-  test('deve exibir maqueiros fixos corretamente', async ({ page }) => {
+  test('deve exibir funcionários fixos corretamente', async ({ page }) => {
     await page.getByTestId('logout-button').click();
     await loginAsMaqueiro(page, E2E_FIXO_EMAIL);
 

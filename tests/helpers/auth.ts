@@ -14,7 +14,8 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 export const E2E_PASSWORD = '123456';
-export const E2E_NURSE_EMAIL = 'e2e.enfermeiro@escala.test';
+export const ADMIN_EMAIL = (process.env.VITE_ADMIN_EMAIL || 'admin@escala.local').trim().toLowerCase();
+export const ADMIN_PASSWORD = process.env.VITE_ADMIN_PASSWORD || 'Admin@123';
 export const E2E_MAQUEIRO_EMAIL = 'e2e.maqueiro@escala.test';
 export const E2E_FIXO_EMAIL = 'e2e.fixo@escala.test';
 
@@ -24,17 +25,6 @@ export async function ensureTestUsers() {
   if (ensuredUsers) return;
 
   const { error } = await supabase.from('usuarios').upsert([
-    {
-      id: 'e2e-admin',
-      nome: 'E2E Enfermeiro Admin',
-      matricula: 'E2E-ADM',
-      login: E2E_NURSE_EMAIL,
-      senha: E2E_PASSWORD,
-      role: 'enfermeiro',
-      turno: 'manha',
-      tipo: 'normal',
-      ativo: true,
-    },
     {
       id: 'e2e-maqueiro',
       nome: 'E2E Maqueiro Normal',
@@ -78,7 +68,7 @@ export async function login(page: Page, email: string, password = E2E_PASSWORD) 
 }
 
 export async function loginAsNurse(page: Page) {
-  await login(page, E2E_NURSE_EMAIL);
+  await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
   await expect(page.getByTestId('nurse-dashboard')).toBeVisible();
 }
 

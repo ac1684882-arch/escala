@@ -1,6 +1,6 @@
-# 🏥 Sistema de Escala de Maqueiros - Prefeitura do Rio
+# 🏥 Sistema de Escala de Funcionários - CCO
 
-Sistema completo de gerenciamento de escalas de trabalho para maqueiros hospitalares.
+Sistema completo de gerenciamento de escalas de trabalho para funcionários do CCO.
 
 ## 🎯 **Arquitetura**
 
@@ -68,14 +68,14 @@ Ver workflow em: `.github/workflows/keep-alive.yml`
 
 ## ✨ **Funcionalidades**
 
-### **Para Maqueiros:**
+### **Para Funcionários:**
 - ✅ Escolher sábado de trabalho
 - ✅ Escolher folga compensatória
 - ✅ Visualizar escala completa do hospital
 - ✅ Regras automáticas (fixos de sábado)
 
 ### **Para Enfermeiros/Supervisores:**
-- ✅ Gerenciar maqueiros (CRUD)
+- ✅ Gerenciar funcionários (CRUD)
 - ✅ Visualizar calendário completo
 - ✅ Bloquear datas específicas
 - ✅ Configurar vagas por sábado
@@ -125,4 +125,4 @@ Apache-2.0
 
 ---
 
-**Desenvolvido para a Prefeitura do Rio de Janeiro - Secretaria Municipal de Saúde**
+**Desenvolvido para o Super Centro Carioca do Olho (CCO)**

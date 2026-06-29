@@ -46,15 +46,12 @@ export default function PrefeituraHeader({ currentUser, onLogout }: PrefeituraHe
 
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-sans font-extrabold text-lg sm:text-xl tracking-tight uppercase leading-tight">
-                Prefeitura do Rio
+              <h1 className="font-sans font-extrabold text-base sm:text-lg tracking-tight uppercase leading-tight">
+                SUPER CENTRO CARIOCA DO OLHO (CCO)
               </h1>
-              <span className="bg-[#FFB300] text-blue-950 font-bold text-[10px] px-1.5 py-0.5 rounded uppercase tracking-wider shadow-sm">
-                SMS
-              </span>
             </div>
             <p className="text-xs text-blue-100 font-medium tracking-wide">
-              Secretaria Municipal de Saúde - Escala Hospitalar
+              Escala de Funcionários
             </p>
           </div>
         </div>
@@ -72,7 +69,7 @@ export default function PrefeituraHeader({ currentUser, onLogout }: PrefeituraHe
                     </span>
                   ) : (
                     <span className="bg-blue-100 text-[#005C9E] font-bold text-[9px] px-1 py-0.1 rounded uppercase">
-                      Maqueiro {currentUser.tipo === StretcherType.FIXO_SABADO ? 'Fixo' : 'Normal'}
+                      Funcionário {currentUser.tipo === StretcherType.FIXO_SABADO ? 'Fixo' : 'Normal'}
                     </span>
                   )}
                 </div>

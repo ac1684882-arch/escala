@@ -216,7 +216,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-800">
-      {/* Institutional Top Header */}
+      {/* App Header */}
       <PrefeituraHeader
         currentUser={currentUser}
         onLogout={handleLogout}
@@ -275,7 +275,7 @@ export default function App() {
       {/* Shared Footer */}
       <footer className="bg-white border-t border-gray-200 py-4 text-center text-xs text-gray-400 font-semibold uppercase tracking-wider">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          Prefeitura do Rio de Janeiro • Secretaria Municipal de Saúde • SMS-Rio
+          SUPER CENTRO CARIOCA DO OLHO (CCO) • Escala de Funcionários
         </div>
       </footer>
     </div>

@@ -158,7 +158,7 @@ export default function MaqueiroDashboard({
             Escala Fixa Programada (Regime Especial)
           </div>
           <p className="text-xs text-emerald-700 leading-relaxed">
-            Como você é maqueiro de regime <strong>Fixo de Sábado à Tarde</strong>, sua escala é automática:
+            Como você é funcionário de regime <strong>Fixo de Sábado à Tarde</strong>, sua escala é automática:
           </p>
           <ul className="text-xs text-emerald-900 font-bold list-disc pl-5 space-y-1">
             <li>Você trabalha todo Sábado das 11:00 às 20:00 (Turno Tarde).</li>
@@ -289,7 +289,7 @@ export default function MaqueiroDashboard({
             </div>
 
             <p className="text-xs text-gray-500 leading-relaxed">
-              Cada maqueiro normal escolhe exatamente 1 sábado do mês para plantão presencial. Após a escolha, as vagas correspondentes são deduzidas.
+              Cada funcionário normal escolhe exatamente 1 sábado do mês para plantão presencial. Após a escolha, as vagas correspondentes são deduzidas.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -415,7 +415,7 @@ export default function MaqueiroDashboard({
           </h3>
         </div>
         <p className="text-xs text-gray-500 leading-relaxed">
-          Veja a distribuição de todos os maqueiros por turno e confira folgas compensatórias já agendadas no mês.
+          Veja a distribuição de todos os funcionários por turno e confira folgas compensatórias já agendadas no mês.
         </p>
 
         <CalendarView

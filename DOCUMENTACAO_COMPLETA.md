@@ -1,8 +1,8 @@
-# 📚 Documentação Completa - Sistema de Escala de Maqueiros
+# 📚 Documentação Completa - Sistema de Escala de Funcionários
 
 ## 🏥 **Sobre o Projeto**
 
-Sistema de gerenciamento de escalas de trabalho para maqueiros hospitalares da Prefeitura do Rio de Janeiro - Secretaria Municipal de Saúde.
+Sistema de gerenciamento de escalas de trabalho para funcionários do Super Centro Carioca do Olho (CCO).
 
 ---
 
@@ -642,4 +642,4 @@ git push origin main  # Deploy automático via GitHub Actions
 **Documentação criada em:** 28/02/2026  
 **Última atualização:** 28/02/2026  
 **Versão:** 1.0.0  
-**Autor:** Sistema de Escala - Prefeitura do Rio
+**Autor:** Sistema de Escala - Super Centro Carioca do Olho (CCO)

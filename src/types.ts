@@ -46,6 +46,6 @@ export interface Bloqueio {
 
 export interface Configuracao {
   mesAno: string;
-  vagasPorSabado: number; // Quantas vagas por sábado para maqueiros normais
+  vagasPorSabado: number; // Quantas vagas por sábado para funcionários normais
   folgasLiberadasManualmente: boolean; // Override para liberar folgas antes de todos escolherem o sábado
 }

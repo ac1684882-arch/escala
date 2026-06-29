@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  * 
  * Supabase Storage Layer
- * Database operations for the Escala de Maqueiros system
+ * Database operations for the Escala de Funcionários system
  */
 
 import { supabase } from '../config/supabase';
@@ -12,11 +12,17 @@ import {
   Escala,
   Bloqueio,
   Configuracao,
+  UserRole,
+  UserShift,
+  StretcherType,
 } from '../types';
 
 const DEMO_USER_IDS = Array.from({ length: 12 }, (_, index) => `u-${index + 1}`);
 const DEMO_SCALE_IDS = ['esc-1', 'esc-2', 'esc-3'];
 const DEMO_BLOCK_IDS = ['bloq-1'];
+export const SHARED_ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL || 'admin@escala.local').trim().toLowerCase();
+export const SHARED_ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'Admin@123';
+const SHARED_ADMIN_ID = 'admin-supervisores';
 
 // Helper to get all Saturdays of a given month/year
 export function getSaturdaysInMonth(year: number, month: number): string[] {
@@ -67,6 +73,7 @@ export async function initializeStorage() {
     console.log('💡 Execute o SQL em supabase/init.sql no Supabase Dashboard');
   } else {
     await removeDemoData();
+    await ensureSharedAdminUser();
     console.log('✅ Tabelas do banco de dados verificadas!');
   }
 }
@@ -79,6 +86,40 @@ async function removeDemoData(): Promise<void> {
     await supabase.from('usuarios').delete().in('id', DEMO_USER_IDS);
   } catch (error) {
     console.error('Erro ao remover dados ficticios:', error);
+  }
+}
+
+async function ensureSharedAdminUser(): Promise<void> {
+  const { data: existingAdmin, error: lookupError } = await supabase
+    .from('usuarios')
+    .select('id')
+    .eq('login', SHARED_ADMIN_EMAIL)
+    .maybeSingle();
+
+  if (lookupError) {
+    throw lookupError;
+  }
+
+  const adminUser: Usuario = {
+    id: existingAdmin?.id || SHARED_ADMIN_ID,
+    nome: 'Admin Supervisores',
+    matricula: 'ADMIN-SUPERVISORES',
+    login: SHARED_ADMIN_EMAIL,
+    senha: SHARED_ADMIN_PASSWORD,
+    role: UserRole.ENFERMEIRO,
+    turno: UserShift.MANHA,
+    tipo: StretcherType.NORMAL,
+    ativo: true,
+  };
+
+  const { error } = await supabase
+    .from('usuarios')
+    .upsert(adminUser, {
+      onConflict: 'id',
+    });
+
+  if (error) {
+    throw error;
   }
 }
 
@@ -129,7 +170,6 @@ export async function updateUsuario(updatedUser: Usuario): Promise<void> {
         turno: updatedUser.turno,
         tipo: updatedUser.tipo,
         ativo: updatedUser.ativo,
-        updated_at: new Date().toISOString(),
       })
       .eq('id', updatedUser.id);
 
