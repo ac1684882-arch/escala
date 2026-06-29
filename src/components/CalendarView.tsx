@@ -166,7 +166,7 @@ export default function CalendarView({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden" id="calendar-view">
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden" id="calendar-view" data-testid="calendar-view">
       {/* Calendar Header, Filters & Search bar */}
       <div className="bg-[#F8F9FA] p-4 sm:p-6 border-b border-gray-100 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -179,16 +179,18 @@ export default function CalendarView({
               <div className="flex items-center gap-1">
                 <button
                   onClick={handlePrevMonth}
+                  data-testid="calendar-prev"
                   className="p-1 hover:bg-gray-200 rounded text-gray-600 transition"
                   title="Mês Anterior"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <h3 className="font-sans font-black text-lg sm:text-xl text-[#003B66] min-w-[130px] text-center">
+                <h3 className="font-sans font-black text-lg sm:text-xl text-[#003B66] min-w-[130px] text-center" data-testid="calendar-title">
                   {monthName} {year}
                 </h3>
                 <button
                   onClick={handleNextMonth}
+                  data-testid="calendar-next"
                   className="p-1 hover:bg-gray-200 rounded text-gray-600 transition"
                   title="Próximo Mês"
                 >
@@ -210,6 +212,7 @@ export default function CalendarView({
               <select
                 className="bg-transparent border-0 font-bold text-gray-800 focus:ring-0 outline-none p-0 cursor-pointer"
                 value={selectedShift}
+                data-testid="shift-filter"
                 onChange={(e) => setSelectedShift(e.target.value)}
               >
                 <option value="todos">Todos os Turnos</option>
@@ -226,6 +229,7 @@ export default function CalendarView({
               <input
                 type="text"
                 placeholder="Buscar por maqueiro..."
+                data-testid="calendar-search"
                 className="w-full pl-9 pr-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-[#005C9E] shadow-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}

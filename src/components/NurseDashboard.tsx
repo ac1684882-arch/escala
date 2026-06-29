@@ -163,7 +163,7 @@ export default function NurseDashboard({
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Maqueiros */}
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4" data-testid="metric-maqueiros-ativos">
           <div className="bg-[#005C9E]/10 p-3 rounded-xl text-[#005C9E]">
             <Users className="w-6 h-6" />
           </div>
@@ -177,7 +177,7 @@ export default function NurseDashboard({
         </div>
 
         {/* Sábados Escolhidos */}
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4" data-testid="metric-sabados-agendados">
           <div className="bg-blue-100 p-3 rounded-xl text-blue-800">
             <CalendarCheck className="w-6 h-6" />
           </div>
@@ -193,7 +193,7 @@ export default function NurseDashboard({
         </div>
 
         {/* Folgas compensatórias escolhidas */}
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
+        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4" data-testid="metric-folgas-definidas">
           <div className="bg-green-100 p-3 rounded-xl text-[#2E7D32]">
             <CheckCircle className="w-6 h-6" />
           </div>
@@ -233,6 +233,7 @@ export default function NurseDashboard({
       <div className="bg-white p-2 rounded-xl border border-gray-100 shadow-sm flex gap-2">
         <button
           onClick={() => setActiveTab('escala')}
+          data-testid="tab-escala"
           className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeTab === 'escala'
               ? 'bg-[#005C9E] text-white shadow-sm'
@@ -245,6 +246,7 @@ export default function NurseDashboard({
 
         <button
           onClick={() => setActiveTab('pessoal')}
+          data-testid="tab-pessoal"
           className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeTab === 'pessoal'
               ? 'bg-[#005C9E] text-white shadow-sm'
@@ -257,6 +259,7 @@ export default function NurseDashboard({
 
         <button
           onClick={() => setActiveTab('configs')}
+          data-testid="tab-configs"
           className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
             activeTab === 'configs'
               ? 'bg-[#005C9E] text-white shadow-sm'

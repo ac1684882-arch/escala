@@ -168,7 +168,7 @@ export default function MaqueiroDashboard({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Status block 1: Saturday */}
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between" data-testid="status-sabado">
             <div>
               <span className="text-[10px] font-black uppercase tracking-wider text-gray-400">Passo 1</span>
               <h4 className="font-sans font-bold text-sm text-[#003B66] mt-0.5">Sábado de Plantão</h4>
@@ -192,7 +192,7 @@ export default function MaqueiroDashboard({
           </div>
 
           {/* Status block 2: Folga Status */}
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between" data-testid="status-folga">
             <div>
               <span className="text-[10px] font-black uppercase tracking-wider text-gray-400">Passo 2</span>
               <h4 className="font-sans font-bold text-sm text-[#003B66] mt-0.5">Folga Compensatória</h4>
@@ -226,7 +226,7 @@ export default function MaqueiroDashboard({
           </div>
 
           {/* Action box / Resumo */}
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between" data-testid="status-escala">
             <div>
               <h4 className="font-sans font-bold text-sm text-[#003B66]">Sua Escala Operacional</h4>
               <p className="text-xs text-gray-500 mt-1">Status geral da sua escala em {monthName}/{year}.</p>
@@ -280,7 +280,7 @@ export default function MaqueiroDashboard({
       {!isFixo && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Step 1 Selector: Saturdays list */}
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4" data-testid="sabado-selector">
             <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
               <CalendarDays className="w-5 h-5 text-[#005C9E]" />
               <h3 className="font-sans font-bold text-sm text-[#003B66]">
@@ -333,7 +333,7 @@ export default function MaqueiroDashboard({
           </div>
 
           {/* Step 2 Selector: Weekdays off list */}
-          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+          <div className="bg-white p-5 sm:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4" data-testid="folga-selector">
             <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
               <UserCheck className="w-5 h-5 text-[#2E7D32]" />
               <h3 className="font-sans font-bold text-sm text-[#003B66]">

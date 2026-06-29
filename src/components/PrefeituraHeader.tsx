@@ -147,6 +147,7 @@ export default function PrefeituraHeader({
               onClick={onLogout}
               className="bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 px-3 rounded-lg flex items-center gap-1.5 text-xs transition duration-150 shadow-sm hover:shadow active:scale-95"
               id="btn-logout"
+              data-testid="logout-button"
             >
               <LogOut className="w-3.5 h-3.5" />
               Sair

@@ -35,6 +35,7 @@ export default function App() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [escalas, setEscalas] = useState<Escala[]>([]);
   const [bloqueios, setBloqueios] = useState<Bloqueio[]>([]);
+  const [isInitialDataLoading, setIsInitialDataLoading] = useState(true);
   const [currentMonthStr, setCurrentMonthStr] = useState<string>('2026-07'); // Default to pre-seeded July 2026
   const [config, setConfig] = useState<Configuracao>({
     mesAno: '2026-07',
@@ -50,6 +51,8 @@ export default function App() {
         await loadAllData('2026-07');
       } catch (error) {
         console.error('Erro ao inicializar dados:', error);
+      } finally {
+        setIsInitialDataLoading(false);
       }
     };
     initData();
@@ -221,12 +224,19 @@ export default function App() {
       />
 
       <main className="flex-grow">
-        {!currentUser ? (
+        {isInitialDataLoading ? (
+          <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-4" data-testid="app-loading">
+            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm px-6 py-5 text-center">
+              <div className="text-sm font-bold text-[#003B66]">Carregando dados do sistema...</div>
+              <div className="text-xs text-gray-500 mt-1">Aguarde enquanto conectamos ao banco de dados.</div>
+            </div>
+          </div>
+        ) : !currentUser ? (
           /* Login Screen */
           <LoginScreen onLoginSuccess={handleLoginSuccess} allUsers={usuarios} />
         ) : currentUser.role === UserRole.ENFERMEIRO ? (
           /* Supervisor/Nurse Dashboard */
-          <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8" data-testid="nurse-dashboard">
             <NurseDashboard
               usuarios={usuarios}
               escalas={escalas}
@@ -246,7 +256,7 @@ export default function App() {
           </div>
         ) : (
           /* Stretcher Dashboard */
-          <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8" data-testid="maqueiro-dashboard">
             <MaqueiroDashboard
               currentUser={currentUser}
               currentMonthStr={currentMonthStr}

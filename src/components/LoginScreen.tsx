@@ -68,7 +68,7 @@ export default function LoginScreen({ onLoginSuccess, allUsers }: LoginScreenPro
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleLoginSubmit} className="p-6 sm:p-8 space-y-5" id="form-login">
+        <form onSubmit={handleLoginSubmit} className="p-6 sm:p-8 space-y-5" id="form-login" data-testid="login-form">
           {errorMsg && (
             <div className="bg-red-50 border-l-4 border-red-500 text-red-800 p-3 rounded text-xs font-semibold animate-shake">
               {errorMsg}
@@ -86,6 +86,7 @@ export default function LoginScreen({ onLoginSuccess, allUsers }: LoginScreenPro
               <input
                 id="login"
                 type="text"
+                data-testid="login-input"
                 placeholder="Ex: ana.paula ou MQ001"
                 className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
                 value={loginInput}
@@ -105,6 +106,7 @@ export default function LoginScreen({ onLoginSuccess, allUsers }: LoginScreenPro
               <input
                 id="password"
                 type="password"
+                data-testid="password-input"
                 placeholder="••••••"
                 className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
                 value={passwordInput}
@@ -115,6 +117,7 @@ export default function LoginScreen({ onLoginSuccess, allUsers }: LoginScreenPro
 
           <button
             type="submit"
+            data-testid="login-button"
             className="w-full bg-[#005C9E] hover:bg-[#004D85] text-white font-bold py-3 px-4 rounded-lg text-sm uppercase tracking-wider transition-all duration-150 shadow-md hover:shadow-lg active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
           >
             <Key className="w-4 h-4 text-[#FFB300]" />
