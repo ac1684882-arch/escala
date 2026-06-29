@@ -84,8 +84,7 @@ export default function CalendarView({
     const activeUsers = usuarios.filter((u) => u.ativo && u.role === UserRole.MAQUEIRO);
 
     activeUsers.forEach((u) => {
-      // Find scale for this user in this month
-      const esc = escalas.find((e) => e.usuarioId === u.id && e.mesAno === currentMonthStr);
+      const userScales = escalas.filter((e) => e.usuarioId === u.id && e.mesAno === currentMonthStr);
 
       if (u.tipo === StretcherType.FIXO_SABADO) {
         // FIXED SATURDAY AFTERNOON MAQUEIROS
@@ -99,7 +98,7 @@ export default function CalendarView({
         // NORMAL MAQUEIROS
         if (isSaturday) {
           // Normal maqueiro works if they specifically chose this Saturday
-          if (esc && esc.sabadoTrabalho === dStr) {
+          if (userScales.some((esc) => esc.sabadoTrabalho === dStr)) {
             if (u.turno === UserShift.MANHA) {
               dutyMorning.push({ name: u.nome, type: 'Plantão Sábado', matricula: u.matricula });
             } else {
@@ -108,7 +107,7 @@ export default function CalendarView({
           }
         } else if (isWeekday) {
           // Weekday: only show if they chose this day as their folgaCompensatoria (off-day)
-          if (esc && esc.folgaCompensatoria === dStr) {
+          if (userScales.some((esc) => esc.folgaCompensatoria === dStr)) {
             offList.push({ name: u.nome, reason: 'Folga Compensatória', type: 'compensatoria' });
           }
           // Do not add "Regular" shifts to weekday cells because it clutters the calendar

@@ -88,8 +88,8 @@ export default function NurseDashboard({
   const totalMaqueiros = normalMaqueiros.length + fixedMaqueiros.length;
 
   const scalesThisMonth = escalas.filter((e) => e.mesAno === currentMonthStr);
-  const countSaturdaysChosen = scalesThisMonth.filter((e) => e.sabadoTrabalho !== null).length;
-  const countFolgasChosen = scalesThisMonth.filter((e) => e.folgaCompensatoria !== null).length;
+  const countSaturdaysChosen = new Set(scalesThisMonth.filter((e) => e.sabadoTrabalho !== null).map((e) => e.usuarioId)).size;
+  const countFolgasChosen = new Set(scalesThisMonth.filter((e) => e.folgaCompensatoria !== null).map((e) => e.usuarioId)).size;
 
   const handleCalendarDayClick = (dateStr: string, isSaturday: boolean, isWeekday: boolean) => {
     setSelectedDateForEdit(dateStr);
@@ -116,18 +116,12 @@ export default function NurseDashboard({
 
     if (!selectedStretcherForManualEdit) return;
 
-    // Find if stretcher already has scale for this month
-    const currentScale = scalesThisMonth.find((esc) => esc.usuarioId === selectedStretcherForManualEdit);
-    let updatedSabado = currentScale?.sabadoTrabalho || null;
-    let updatedFolga = currentScale?.folgaCompensatoria || null;
-
     if (manualActionType === 'trabalho') {
-      updatedSabado = selectedDateForEdit;
+      onUpdateEscalaManual(selectedStretcherForManualEdit, selectedDateForEdit, null);
     } else {
-      updatedFolga = selectedDateForEdit;
+      onUpdateEscalaManual(selectedStretcherForManualEdit, null, selectedDateForEdit);
     }
 
-    onUpdateEscalaManual(selectedStretcherForManualEdit, updatedSabado, updatedFolga);
     setSelectedDateForEdit(null);
   };
 

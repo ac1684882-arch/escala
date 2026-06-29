@@ -24,6 +24,7 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
   const [registerName, setRegisterName] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+  const [registerShift, setRegisterShift] = useState<UserShift>(UserShift.MANHA);
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -89,7 +90,7 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
       login: normalizedEmail,
       senha: registerPassword,
       role: UserRole.MAQUEIRO,
-      turno: UserShift.MANHA,
+      turno: registerShift,
       tipo: StretcherType.NORMAL,
       ativo: true,
     };
@@ -218,7 +219,7 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
             )}
 
             <div className="bg-blue-50 border border-blue-100 text-blue-900 p-3 rounded-lg text-xs leading-relaxed">
-              Funcionário: crie seu cadastro com nome, e-mail e senha. O administrador poderá ajustar turno e regime depois.
+              Funcionário: crie seu cadastro com nome, e-mail, senha e turno atual. O administrador poderá ajustar o regime depois.
             </div>
 
             <div className="space-y-1.5">
@@ -279,6 +280,22 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
                   onChange={(e) => setRegisterPassword(e.target.value)}
                 />
               </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider" htmlFor="register-shift">
+                Horário / turno atual
+              </label>
+              <select
+                id="register-shift"
+                data-testid="register-shift"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
+                value={registerShift}
+                onChange={(e) => setRegisterShift(e.target.value as UserShift)}
+              >
+                <option value={UserShift.MANHA}>Manhã - 07h às 16h</option>
+                <option value={UserShift.TARDE}>Tarde - 11h às 20h</option>
+              </select>
             </div>
 
             <button

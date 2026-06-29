@@ -18,6 +18,7 @@ export default function StretcherManagement({
   onAddUser,
   onUpdateUser,
 }: StretcherManagementProps) {
+  const visibleUsuarios = usuarios.filter((user) => user.matricula !== 'ADMIN-SUPERVISORES');
   const [isAdding, setIsAdding] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
 
@@ -321,7 +322,7 @@ export default function StretcherManagement({
       {/* Users List Grid */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="bg-gray-50/75 p-4 border-b border-gray-100 flex justify-between items-center">
-          <h3 className="font-sans font-bold text-sm text-[#003B66]">Profissionais Cadastrados ({usuarios.length})</h3>
+          <h3 className="font-sans font-bold text-sm text-[#003B66]">Profissionais Cadastrados ({visibleUsuarios.length})</h3>
           <span className="text-[10px] font-black bg-blue-100 text-[#005C9E] px-2 py-0.5 rounded uppercase">
             Cadastros reais da equipe
           </span>
@@ -340,7 +341,7 @@ export default function StretcherManagement({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-xs text-gray-700 font-medium">
-              {usuarios.map((user) => (
+              {visibleUsuarios.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50/50 transition">
                   <td className="p-4">
                     <div className="font-bold text-gray-900">{user.nome}</div>

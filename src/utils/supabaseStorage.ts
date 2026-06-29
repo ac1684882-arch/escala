@@ -102,7 +102,7 @@ async function ensureSharedAdminUser(): Promise<void> {
 
   const adminUser: Usuario = {
     id: existingAdmin?.id || SHARED_ADMIN_ID,
-    nome: 'Admin Supervisores',
+    nome: 'Admin CCO',
     matricula: 'ADMIN-SUPERVISORES',
     login: SHARED_ADMIN_EMAIL,
     senha: SHARED_ADMIN_PASSWORD,
@@ -240,10 +240,11 @@ export async function getEscalaForUser(
       .select('*')
       .eq('usuario_id', userId)
       .eq('mes_ano', mesAno)
-      .single();
+      .order('sabado_trabalho', { ascending: true })
+      .limit(1)
+      .maybeSingle();
 
     if (error) {
-      if (error.code === 'PGRST116') return null; // No rows found
       throw error;
     }
 
@@ -262,6 +263,25 @@ export async function getEscalaForUser(
   }
 }
 
+async function getEscalasForUser(userId: string, mesAno: string): Promise<Escala[]> {
+  const { data, error } = await supabase
+    .from('escalas')
+    .select('*')
+    .eq('usuario_id', userId)
+    .eq('mes_ano', mesAno)
+    .order('sabado_trabalho', { ascending: true });
+
+  if (error) throw error;
+
+  return (data || []).map((row: any) => ({
+    id: row.id,
+    usuarioId: row.usuario_id,
+    mesAno: row.mes_ano,
+    sabadoTrabalho: row.sabado_trabalho,
+    folgaCompensatoria: row.folga_compensatoria,
+  }));
+}
+
 export async function updateOrCreateEscala(
   userId: string,
   mesAno: string,
@@ -269,33 +289,71 @@ export async function updateOrCreateEscala(
   folga: string | null
 ): Promise<void> {
   try {
-    const existing = await getEscalaForUser(userId, mesAno);
+    const existingScales = await getEscalasForUser(userId, mesAno);
 
-    if (existing) {
-      // Update
+    if (!sabado && !folga) {
       const { error } = await supabase
         .from('escalas')
-        .update({
-          sabado_trabalho: sabado,
-          folga_compensatoria: folga,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', existing.id);
+        .delete()
+        .eq('usuario_id', userId)
+        .eq('mes_ano', mesAno);
 
       if (error) throw error;
-    } else {
-      // Create
-      const newEscala = {
-        id: `esc-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        usuario_id: userId,
-        mes_ano: mesAno,
-        sabado_trabalho: sabado,
-        folga_compensatoria: folga,
-      };
+      return;
+    }
+
+    if (folga) {
+      if (existingScales.length > 0) {
+        const { error } = await supabase
+          .from('escalas')
+          .update({
+            folga_compensatoria: folga,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('usuario_id', userId)
+          .eq('mes_ano', mesAno);
+
+        if (error) throw error;
+        return;
+      }
 
       const { error } = await supabase
         .from('escalas')
-        .insert([newEscala]);
+        .insert([{
+          id: `esc-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          usuario_id: userId,
+          mes_ano: mesAno,
+          sabado_trabalho: sabado,
+          folga_compensatoria: folga,
+        }]);
+
+      if (error) throw error;
+      return;
+    }
+
+    if (sabado) {
+      const existingSaturday = existingScales.find((scale) => scale.sabadoTrabalho === sabado);
+
+      if (existingSaturday) {
+        const { error } = await supabase
+          .from('escalas')
+          .delete()
+          .eq('id', existingSaturday.id);
+
+        if (error) throw error;
+        return;
+      }
+
+      const sharedFolga = existingScales.find((scale) => scale.folgaCompensatoria)?.folgaCompensatoria || null;
+      const { error } = await supabase
+        .from('escalas')
+        .insert([{
+          id: `esc-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          usuario_id: userId,
+          mes_ano: mesAno,
+          sabado_trabalho: sabado,
+          folga_compensatoria: sharedFolga,
+        }]);
 
       if (error) throw error;
     }

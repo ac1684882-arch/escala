@@ -168,10 +168,7 @@ export default function App() {
   const handleChooseFolga = async (folgaDate: string) => {
     if (!currentUser) return;
     try {
-      // Keep current saturday, change folga
-      const currentScale = escalas.find((e) => e.usuarioId === currentUser.id && e.mesAno === currentMonthStr);
-      const sat = currentScale?.sabadoTrabalho || null;
-      await updateOrCreateEscala(currentUser.id, currentMonthStr, sat, folgaDate);
+      await updateOrCreateEscala(currentUser.id, currentMonthStr, null, folgaDate);
       const updatedEscalas = await getEscalas();
       setEscalas(updatedEscalas);
     } catch (error) {

@@ -51,10 +51,12 @@ export default function MaqueiroDashboard({
   ];
   const monthName = monthNamesPt[month - 1];
 
-  // Get user's current scale
-  const userScale = escalas.find((e) => e.usuarioId === currentUser.id && e.mesAno === currentMonthStr);
-  const chosenSaturday = userScale?.sabadoTrabalho || null;
-  const chosenFolga = userScale?.folgaCompensatoria || null;
+  const userScales = escalas.filter((e) => e.usuarioId === currentUser.id && e.mesAno === currentMonthStr);
+  const chosenSaturdays = userScales
+    .map((scale) => scale.sabadoTrabalho)
+    .filter((date): date is string => Boolean(date))
+    .sort();
+  const chosenFolga = userScales.find((scale) => scale.folgaCompensatoria)?.folgaCompensatoria || null;
 
   const isFixo = currentUser.tipo === StretcherType.FIXO_SABADO;
   
@@ -69,7 +71,11 @@ export default function MaqueiroDashboard({
     checkFolgasUnlock();
   }, [currentMonthStr, escalas, config]);
   
-  const countSaturdaysChosen = escalas.filter((e) => e.mesAno === currentMonthStr && e.sabadoTrabalho !== null).length;
+  const countSaturdaysChosen = new Set(
+    escalas
+      .filter((e) => e.mesAno === currentMonthStr && e.sabadoTrabalho !== null)
+      .map((e) => e.usuarioId)
+  ).size;
 
   // Calculate Saturdays in month
   const saturdays = getSaturdaysInMonth(year, month - 1);
@@ -124,7 +130,8 @@ export default function MaqueiroDashboard({
   const handleSelectSaturday = (satDate: string) => {
     if (isFixo) return;
     const slots = getSaturdaySlots(satDate);
-    if (slots.isEsgotado && chosenSaturday !== satDate) {
+    const isSelected = chosenSaturdays.includes(satDate);
+    if (slots.isEsgotado && !isSelected) {
       alert('Este sábado já atingiu o limite de vagas disponíveis.');
       return;
     }
@@ -133,8 +140,8 @@ export default function MaqueiroDashboard({
 
   const handleSelectFolga = (folgaDate: string) => {
     if (isFixo) return;
-    if (!chosenSaturday) {
-      alert('Você precisa escolher um Sábado de trabalho antes de escolher a folga.');
+    if (chosenSaturdays.length === 0) {
+      alert('Você precisa escolher pelo menos um Sábado de trabalho antes de escolher a folga.');
       return;
     }
     if (!isFolgasUnlocked) {
@@ -175,11 +182,15 @@ export default function MaqueiroDashboard({
               <p className="text-xs text-gray-500 mt-1">Selecione o sábado em que irá trabalhar.</p>
             </div>
             <div className="mt-4">
-              {chosenSaturday ? (
+              {chosenSaturdays.length > 0 ? (
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between text-xs font-bold text-blue-900">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4.5 h-4.5 text-blue-600 shrink-0" />
-                    <span>Selecionado: {chosenSaturday.split('-').reverse().join('/')}</span>
+                    <span>
+                      {chosenSaturdays.length === 1
+                        ? `Selecionado: ${chosenSaturdays[0].split('-').reverse().join('/')}`
+                        : `${chosenSaturdays.length} sábados selecionados`}
+                    </span>
                   </div>
                 </div>
               ) : (
@@ -199,10 +210,10 @@ export default function MaqueiroDashboard({
               <p className="text-xs text-gray-500 mt-1">Escolha uma folga em dia útil (Segunda a Sexta).</p>
             </div>
             <div className="mt-4">
-              {!chosenSaturday ? (
+              {chosenSaturdays.length === 0 ? (
                 <div className="bg-gray-100 border border-gray-200 rounded-xl p-3 flex items-center gap-2 text-xs font-bold text-gray-500">
                   <Lock className="w-4.5 h-4.5 shrink-0" />
-                  <span>Escolha o Sábado primeiro</span>
+                  <span>Escolha pelo menos um Sábado primeiro</span>
                 </div>
               ) : !isFolgasUnlocked ? (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center gap-2 text-xs font-bold text-amber-800">
@@ -232,13 +243,13 @@ export default function MaqueiroDashboard({
               <p className="text-xs text-gray-500 mt-1">Status geral da sua escala em {monthName}/{year}.</p>
             </div>
             <div className="mt-4 space-y-2">
-              {chosenSaturday && chosenFolga ? (
+              {chosenSaturdays.length > 0 && chosenFolga ? (
                 <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-xs font-semibold text-emerald-800 space-y-1">
                   <div className="flex items-center gap-1.5 font-bold uppercase text-[10px] text-[#2E7D32]">
                     <CheckCircle className="w-4 h-4" />
                     Escala Concluída
                   </div>
-                  <p>Sábado: {chosenSaturday.split('-').reverse().join('/')}</p>
+                  <p>Sábados: {chosenSaturdays.map((date) => date.split('-').reverse().join('/')).join(', ')}</p>
                   <p>Folga: {chosenFolga.split('-').reverse().join('/')}</p>
                   <button
                     onClick={() => {
@@ -251,9 +262,12 @@ export default function MaqueiroDashboard({
                     Alterar Escolhas
                   </button>
                 </div>
-              ) : chosenSaturday ? (
+              ) : chosenSaturdays.length > 0 ? (
                 <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs font-semibold text-[#005C9E] space-y-1">
-                  <p>Sábado de plantão agendado.</p>
+                  <p>{chosenSaturdays.length === 1 ? 'Sábado de plantão agendado.' : 'Sábados de plantão agendados.'}</p>
+                  <p className="text-[11px] text-gray-600 leading-snug">
+                    {chosenSaturdays.map((date) => date.split('-').reverse().join('/')).join(', ')}
+                  </p>
                   <p className="text-[11px] text-gray-500 leading-snug">
                     {!isFolgasUnlocked
                       ? 'As folgas compensatórias serão liberadas pelo admin depois da etapa de escolha dos sábados.'
@@ -263,7 +277,7 @@ export default function MaqueiroDashboard({
                     onClick={onClearEscala}
                     className="text-gray-500 hover:text-red-600 underline text-[10px] block pt-1 cursor-pointer"
                   >
-                    Mudar Sábado
+                    Alterar Sábados
                   </button>
                 </div>
               ) : (
@@ -289,13 +303,13 @@ export default function MaqueiroDashboard({
             </div>
 
             <p className="text-xs text-gray-500 leading-relaxed">
-              Cada funcionário normal escolhe exatamente 1 sábado do mês para plantão presencial. Após a escolha, as vagas correspondentes são deduzidas.
+              Escolha o sábado de plantão. Em caso de imprevisto, o funcionário pode selecionar mais de um sábado no mesmo mês.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {saturdays.map((satDate) => {
                 const slots = getSaturdaySlots(satDate);
-                const isSelected = chosenSaturday === satDate;
+                const isSelected = chosenSaturdays.includes(satDate);
                 const [y, m, d] = satDate.split('-');
                 const formatted = `${d}/${m}/${y}`;
 
@@ -314,7 +328,7 @@ export default function MaqueiroDashboard({
                   >
                     <div className="flex items-center justify-between w-full">
                       <span className="font-bold text-sm">{formatted}</span>
-                      {isSelected && <span className="bg-[#FFB300] text-blue-950 font-bold text-[8px] px-1.5 py-0.5 rounded uppercase">Meu Sábado</span>}
+                      {isSelected && <span className="bg-[#FFB300] text-blue-950 font-bold text-[8px] px-1.5 py-0.5 rounded uppercase">Selecionado</span>}
                     </div>
 
                     <div className="mt-2 text-xs font-semibold">
@@ -345,9 +359,9 @@ export default function MaqueiroDashboard({
               Disponível somente em dias úteis (Segunda a Sexta). Datas marcadas como bloqueadas pelo supervisor hospitalar não podem ser selecionadas.
             </p>
 
-            {!chosenSaturday ? (
+            {chosenSaturdays.length === 0 ? (
               <div className="bg-gray-50 p-6 rounded-xl text-center border border-dashed border-gray-200 text-xs font-medium text-gray-400">
-                Escolha o seu Sábado de trabalho à esquerda para habilitar o painel de folgas.
+                Escolha pelo menos um Sábado de trabalho à esquerda para habilitar o painel de folgas.
               </div>
             ) : !isFolgasUnlocked ? (
               <div className="bg-amber-50/70 p-6 rounded-xl border border-amber-100 text-xs text-amber-900 leading-relaxed space-y-2">

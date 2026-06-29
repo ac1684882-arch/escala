@@ -1,5 +1,5 @@
 -- =====================================================
--- Sistema de Escala de Maqueiros - Prefeitura do Rio
+-- Sistema de Escala de Funcionarios - CCO
 -- Supabase Database Schema
 -- =====================================================
 
@@ -26,9 +26,10 @@ CREATE TABLE IF NOT EXISTS escalas (
   sabado_trabalho DATE,
   folga_compensatoria DATE,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(usuario_id, mes_ano)
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+ALTER TABLE escalas DROP CONSTRAINT IF EXISTS escalas_usuario_id_mes_ano_key;
 
 -- Tabela de Bloqueios de Datas
 CREATE TABLE IF NOT EXISTS bloqueios (
@@ -59,6 +60,7 @@ CREATE INDEX IF NOT EXISTS idx_usuarios_ativo ON usuarios(ativo);
 CREATE INDEX IF NOT EXISTS idx_escalas_usuario_id ON escalas(usuario_id);
 CREATE INDEX IF NOT EXISTS idx_escalas_mes_ano ON escalas(mes_ano);
 CREATE INDEX IF NOT EXISTS idx_escalas_sabado ON escalas(sabado_trabalho);
+CREATE INDEX IF NOT EXISTS idx_escalas_usuario_mes_sabado ON escalas(usuario_id, mes_ano, sabado_trabalho);
 
 CREATE INDEX IF NOT EXISTS idx_bloqueios_data ON bloqueios(data);
 
@@ -140,7 +142,7 @@ DELETE FROM usuarios WHERE id IN (
 INSERT INTO usuarios (id, nome, matricula, login, senha, role, turno, tipo, ativo)
 VALUES (
   'admin-supervisores',
-  'Admin Supervisores',
+  'Admin CCO',
   'ADMIN-SUPERVISORES',
   'admin@escala.local',
   'Admin@123',

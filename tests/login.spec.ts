@@ -33,8 +33,10 @@ test.describe('Sistema de Login', () => {
     await page.getByTestId('register-name').fill(`Funcionario Real ${timestamp}`);
     await page.getByTestId('register-email').fill(`funcionario.${timestamp}@escala.test`);
     await page.getByTestId('register-password').fill('senha123');
+    await page.getByTestId('register-shift').selectOption('tarde');
     await page.getByTestId('register-button').click();
 
     await expect(page.getByTestId('maqueiro-dashboard')).toBeVisible();
+    await expect(page.getByText(/Turno: Tarde/)).toBeVisible();
   });
 });
