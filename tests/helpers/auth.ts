@@ -24,6 +24,18 @@ let ensuredUsers = false;
 export async function ensureTestUsers() {
   if (ensuredUsers) return;
 
+  const { data: existingUsers, error: existingError } = await supabase
+    .from('usuarios')
+    .select('id')
+    .in('id', ['e2e-maqueiro', 'e2e-fixo']);
+
+  if (existingError) throw existingError;
+
+  if ((existingUsers || []).length === 2) {
+    ensuredUsers = true;
+    return;
+  }
+
   const { error } = await supabase.from('usuarios').upsert([
     {
       id: 'e2e-maqueiro',
@@ -51,6 +63,26 @@ export async function ensureTestUsers() {
 
   if (error) throw error;
   ensuredUsers = true;
+}
+
+export async function cleanupTestUsers() {
+  const { data: fakeUsers, error: selectError } = await supabase
+    .from('usuarios')
+    .select('id')
+    .or('login.like.%@escala.test,matricula.like.E2E-%,id.like.e2e-%');
+
+  if (selectError) throw selectError;
+
+  const ids = (fakeUsers || []).map((user) => user.id);
+  if (ids.length === 0) return;
+
+  const { error: scaleError } = await supabase.from('escalas').delete().in('usuario_id', ids);
+  if (scaleError) throw scaleError;
+
+  const { error: userError } = await supabase.from('usuarios').delete().in('id', ids);
+  if (userError) throw userError;
+
+  ensuredUsers = false;
 }
 
 export async function openLogin(page: Page) {

@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { Key, Lock, Mail, ShieldCheck, Stethoscope, UserCheck, UserPlus } from 'lucide-react';
 import { Usuario, UserRole, UserShift, StretcherType } from '../types';
+import { SHARED_ADMIN_EMAIL, SHARED_ADMIN_PASSWORD } from '../utils/supabaseStorage';
 
 interface LoginScreenProps {
   onLoginSuccess: (user: Usuario) => void;
@@ -34,6 +35,22 @@ export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }
 
     if (!normalizedLogin || !passwordInput) {
       setErrorMsg('Informe e-mail e senha para entrar.');
+      return;
+    }
+
+    if (normalizedLogin === SHARED_ADMIN_EMAIL && passwordInput === SHARED_ADMIN_PASSWORD) {
+      setErrorMsg('');
+      onLoginSuccess({
+        id: 'admin-virtual-cco',
+        nome: 'Admin CCO',
+        matricula: 'ADMIN-CCO',
+        login: SHARED_ADMIN_EMAIL,
+        senha: SHARED_ADMIN_PASSWORD,
+        role: UserRole.ENFERMEIRO,
+        turno: UserShift.MANHA,
+        tipo: StretcherType.NORMAL,
+        ativo: true,
+      });
       return;
     }
 

@@ -121,8 +121,8 @@ CREATE POLICY "Permitir escrita em configuracoes"
 -- Sem dados ficticios
 -- =====================================================
 
--- A conta admin compartilhada dos supervisores e criada pelo app e tambem
--- provisionada aqui para bancos inicializados manualmente.
+-- A conta admin compartilhada dos supervisores e uma credencial do app,
+-- nao um funcionario dentro da tabela usuarios.
 -- Funcionarios criam cadastro com nome, e-mail e senha.
 -- A configuracao mensal e criada sob demanda pelo app quando o mes e acessado.
 
@@ -138,25 +138,4 @@ DELETE FROM usuarios WHERE id IN (
   'u-1', 'u-2', 'u-3', 'u-4', 'u-5', 'u-6',
   'u-7', 'u-8', 'u-9', 'u-10', 'u-11', 'u-12'
 );
-
-INSERT INTO usuarios (id, nome, matricula, login, senha, role, turno, tipo, ativo)
-VALUES (
-  'admin-supervisores',
-  'Admin CCO',
-  'ADMIN-SUPERVISORES',
-  'admin@escala.local',
-  'Admin@123',
-  'enfermeiro',
-  'manha',
-  'normal',
-  true
-)
-ON CONFLICT (id) DO UPDATE SET
-  nome = EXCLUDED.nome,
-  matricula = EXCLUDED.matricula,
-  login = EXCLUDED.login,
-  senha = EXCLUDED.senha,
-  role = EXCLUDED.role,
-  turno = EXCLUDED.turno,
-  tipo = EXCLUDED.tipo,
-  ativo = EXCLUDED.ativo;
+DELETE FROM usuarios WHERE id = 'admin-supervisores' OR matricula = 'ADMIN-SUPERVISORES';
