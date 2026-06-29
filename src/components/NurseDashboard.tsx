@@ -220,10 +220,8 @@ export default function NurseDashboard({
             <div className="text-xs text-gray-500 font-semibold uppercase">Escolha do Maqueiro</div>
             <div className="text-[10px] text-gray-400 mt-0.5 font-medium leading-relaxed">
               {config.folgasLiberadasManualmente
-                ? 'Liberado manualmente pelo supervisor'
-                : isFolgaUnlocked
-                  ? 'Liberado: Todos já escolheram sábado'
-                  : 'Aguardando escolha de sábados'}
+                ? 'Admin liberou a escolha de folgas'
+                : 'Admin ainda não liberou as folgas'}
             </div>
           </div>
         </div>
@@ -355,9 +353,9 @@ export default function NurseDashboard({
             <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wide">Liberação Manual Antecipada de Folgas</h4>
+                  <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wide">Liberação Manual de Folgas</h4>
                   <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                    Por padrão, maqueiros normais só podem escolher a folga compensatória em dia útil após todos terem selecionado seus sábados de plantão. Ative este override para pular esta trava e permitir a escolha imediata.
+                    Depois que os funcionários escolherem os sábados pelo link enviado no WhatsApp, use este controle para liberar ou bloquear a escolha das folgas compensatórias.
                   </p>
                 </div>
               </div>
@@ -374,12 +372,12 @@ export default function NurseDashboard({
                 {config.folgasLiberadasManualmente ? (
                   <>
                     <Lock className="w-4 h-4 text-[#FFB300]" />
-                    Ativar Trava (Esperar Todos Sábados)
+                    Bloquear Escolha de Folgas
                   </>
                 ) : (
                   <>
                     <Unlock className="w-4 h-4 text-[#FFB300]" />
-                    Liberar Escolha de Folgas Agora
+                    Liberar Escolha de Folgas
                   </>
                 )}
               </button>

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { loginAsMaqueiro } from './helpers/auth';
+import { E2E_FIXO_EMAIL, loginAsMaqueiro } from './helpers/auth';
 
 test.describe('Dashboard do Maqueiro', () => {
   test.beforeEach(async ({ page }) => {
@@ -30,7 +30,7 @@ test.describe('Dashboard do Maqueiro', () => {
 
   test('deve exibir maqueiros fixos corretamente', async ({ page }) => {
     await page.getByTestId('logout-button').click();
-    await loginAsMaqueiro(page, 'carlos.souza');
+    await loginAsMaqueiro(page, E2E_FIXO_EMAIL);
 
     await expect(page.getByText('Escala Fixa Programada')).toBeVisible();
     await expect(page.getByText('todo Sábado')).toBeVisible();

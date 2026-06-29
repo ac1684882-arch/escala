@@ -52,13 +52,13 @@ export default function StretcherManagement({
       return;
     }
 
-    // Check duplicate matricula or login
+    // Check duplicate matricula or email
     const isDuplicate = usuarios.some(
       (u) => u.matricula.toLowerCase() === matricula.toLowerCase() || u.login.toLowerCase() === login.toLowerCase()
     );
 
     if (isDuplicate) {
-      setErrorMsg('Já existe um usuário cadastrado com esta Matrícula ou Login.');
+      setErrorMsg('Já existe um usuário cadastrado com esta matrícula ou e-mail.');
       return;
     }
 
@@ -66,7 +66,7 @@ export default function StretcherManagement({
       id: `u-${Date.now()}`,
       nome,
       matricula: matricula.toUpperCase(),
-      login: login.toLowerCase(),
+      login: login.trim().toLowerCase(),
       senha,
       role,
       turno,
@@ -107,7 +107,7 @@ export default function StretcherManagement({
     );
 
     if (isDuplicate) {
-      setErrorMsg('Já existe outro usuário cadastrado com esta Matrícula ou Login.');
+      setErrorMsg('Já existe outro usuário cadastrado com esta matrícula ou e-mail.');
       return;
     }
 
@@ -115,7 +115,7 @@ export default function StretcherManagement({
       id: editingUserId!,
       nome,
       matricula: matricula.toUpperCase(),
-      login: login.toLowerCase(),
+      login: login.trim().toLowerCase(),
       senha,
       role,
       turno,
@@ -256,12 +256,12 @@ export default function StretcherManagement({
               </select>
             </div>
 
-            {/* Login de Acesso */}
+            {/* E-mail de Acesso */}
             <div className="space-y-1">
-              <label className="block text-[10px] font-black text-gray-700 uppercase tracking-wider">Login de Usuário *</label>
+              <label className="block text-[10px] font-black text-gray-700 uppercase tracking-wider">E-mail de Acesso *</label>
               <input
-                type="text"
-                placeholder="Ex: joao.souza"
+                type="email"
+                placeholder="Ex: funcionario@hospital.com"
                 className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-xs font-medium focus:outline-none focus:ring-1 focus:ring-[#005C9E]"
                 value={login}
                 onChange={(e) => setLogin(e.target.value.toLowerCase())}
@@ -323,7 +323,7 @@ export default function StretcherManagement({
         <div className="bg-gray-50/75 p-4 border-b border-gray-100 flex justify-between items-center">
           <h3 className="font-sans font-bold text-sm text-[#003B66]">Profissionais Cadastrados ({usuarios.length})</h3>
           <span className="text-[10px] font-black bg-blue-100 text-[#005C9E] px-2 py-0.5 rounded uppercase">
-            Sem exigência de COREN para supervisores
+            Cadastros reais da equipe
           </span>
         </div>
 
@@ -371,7 +371,7 @@ export default function StretcherManagement({
                     </div>
                   </td>
                   <td className="p-4 font-mono text-[11px] text-gray-600">
-                    <div>Login: <span className="font-bold text-gray-800">{user.login}</span></div>
+                    <div>E-mail: <span className="font-bold text-gray-800">{user.login}</span></div>
                     <div>Senha: {user.senha}</div>
                   </td>
                   <td className="p-4">

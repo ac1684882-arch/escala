@@ -87,11 +87,6 @@ export default function App() {
     setCurrentUser(null);
   };
 
-  // Support quick simulator switching
-  const handleSwitchUser = (user: Usuario) => {
-    setCurrentUser(user);
-  };
-
   // Add a new user
   const handleAddUser = async (user: Usuario) => {
     try {
@@ -101,6 +96,12 @@ export default function App() {
     } catch (error) {
       console.error('Erro ao adicionar usuário:', error);
     }
+  };
+
+  const handleRegisterUser = async (user: Usuario) => {
+    await addUsuario(user);
+    const updatedUsers = await getUsuarios();
+    setUsuarios(updatedUsers);
   };
 
   // Update a user (e.g., editing, toggling active status)
@@ -219,8 +220,6 @@ export default function App() {
       <PrefeituraHeader
         currentUser={currentUser}
         onLogout={handleLogout}
-        allUsersForSwitching={usuarios}
-        onSwitchUser={handleSwitchUser}
       />
 
       <main className="flex-grow">
@@ -233,7 +232,7 @@ export default function App() {
           </div>
         ) : !currentUser ? (
           /* Login Screen */
-          <LoginScreen onLoginSuccess={handleLoginSuccess} allUsers={usuarios} />
+          <LoginScreen onLoginSuccess={handleLoginSuccess} onRegisterUser={handleRegisterUser} allUsers={usuarios} />
         ) : currentUser.role === UserRole.ENFERMEIRO ? (
           /* Supervisor/Nurse Dashboard */
           <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8" data-testid="nurse-dashboard">

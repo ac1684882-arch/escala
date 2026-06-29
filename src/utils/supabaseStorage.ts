@@ -12,10 +12,11 @@ import {
   Escala,
   Bloqueio,
   Configuracao,
-  UserRole,
-  UserShift,
-  StretcherType,
 } from '../types';
+
+const DEMO_USER_IDS = Array.from({ length: 12 }, (_, index) => `u-${index + 1}`);
+const DEMO_SCALE_IDS = ['esc-1', 'esc-2', 'esc-3'];
+const DEMO_BLOCK_IDS = ['bloq-1'];
 
 // Helper to get all Saturdays of a given month/year
 export function getSaturdaysInMonth(year: number, month: number): string[] {
@@ -56,7 +57,7 @@ export async function initializeStorage() {
   console.log('✅ Supabase conectado com sucesso!');
   
   // Verify connection by checking if tables exist
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('usuarios')
     .select('count')
     .limit(1);
@@ -65,7 +66,19 @@ export async function initializeStorage() {
     console.error('⚠️ Erro ao conectar com Supabase:', error.message);
     console.log('💡 Execute o SQL em supabase/init.sql no Supabase Dashboard');
   } else {
+    await removeDemoData();
     console.log('✅ Tabelas do banco de dados verificadas!');
+  }
+}
+
+async function removeDemoData(): Promise<void> {
+  try {
+    await supabase.from('escalas').delete().in('id', DEMO_SCALE_IDS);
+    await supabase.from('escalas').delete().in('usuario_id', DEMO_USER_IDS);
+    await supabase.from('bloqueios').delete().in('id', DEMO_BLOCK_IDS);
+    await supabase.from('usuarios').delete().in('id', DEMO_USER_IDS);
+  } catch (error) {
+    console.error('Erro ao remover dados ficticios:', error);
   }
 }
 
@@ -87,9 +100,14 @@ export async function getUsuarios(): Promise<Usuario[]> {
 
 export async function addUsuario(user: Usuario): Promise<void> {
   try {
+    const userToInsert = {
+      ...user,
+      login: user.login.trim().toLowerCase(),
+    };
+
     const { error } = await supabase
       .from('usuarios')
-      .insert([user]);
+      .insert([userToInsert]);
 
     if (error) throw error;
   } catch (error) {
@@ -105,7 +123,7 @@ export async function updateUsuario(updatedUser: Usuario): Promise<void> {
       .update({
         nome: updatedUser.nome,
         matricula: updatedUser.matricula,
-        login: updatedUser.login,
+        login: updatedUser.login.trim().toLowerCase(),
         senha: updatedUser.senha,
         role: updatedUser.role,
         turno: updatedUser.turno,
@@ -359,30 +377,8 @@ export async function updateConfiguracao(
 // Logic helpers
 export async function areFolgasUnlocked(mesAno: string): Promise<boolean> {
   try {
-    // Check config override first
     const config = await getConfiguracoes(mesAno);
-    if (config.folgasLiberadasManualmente) {
-      return true;
-    }
-
-    // Get all active normal maqueiros
-    const allUsers = await getUsuarios();
-    const normalMaqueiros = allUsers.filter(
-      (u) =>
-        u.role === UserRole.MAQUEIRO &&
-        u.tipo === StretcherType.NORMAL &&
-        u.ativo
-    );
-
-    // Get escalas for this month
-    const escalas = await getEscalas();
-    const escalasThisMonth = escalas.filter((e) => e.mesAno === mesAno);
-
-    // Check if all normal maqueiros have chosen a Saturday
-    return normalMaqueiros.every((m) => {
-      const esc = escalasThisMonth.find((e) => e.usuarioId === m.id);
-      return esc && esc.sabadoTrabalho !== null;
-    });
+    return config.folgasLiberadasManualmente;
   } catch (error) {
     console.error('Erro ao verificar desbloqueio de folgas:', error);
     return false;

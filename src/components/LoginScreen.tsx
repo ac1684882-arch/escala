@@ -3,57 +3,118 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Key, Lock, HelpCircle, Award, Stethoscope } from 'lucide-react';
-import { Usuario, UserRole } from '../types';
+import React, { useMemo, useState } from 'react';
+import { Key, Lock, Mail, ShieldCheck, Stethoscope, UserCheck, UserPlus } from 'lucide-react';
+import { Usuario, UserRole, UserShift, StretcherType } from '../types';
 
 interface LoginScreenProps {
   onLoginSuccess: (user: Usuario) => void;
+  onRegisterUser: (user: Usuario) => Promise<void>;
   allUsers: Usuario[];
 }
 
-export default function LoginScreen({ onLoginSuccess, allUsers }: LoginScreenProps) {
+type AuthMode = 'login' | 'register';
+
+const normalizeEmail = (email: string) => email.trim().toLowerCase();
+
+export default function LoginScreen({ onLoginSuccess, onRegisterUser, allUsers }: LoginScreenProps) {
+  const hasAdmin = useMemo(() => allUsers.some((user) => user.role === UserRole.ENFERMEIRO), [allUsers]);
+  const [authMode, setAuthMode] = useState<AuthMode>(hasAdmin ? 'login' : 'register');
   const [loginInput, setLoginInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [registerName, setRegisterName] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isCreatingAdmin = !hasAdmin;
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginInput || !passwordInput) {
-      setErrorMsg('Por favor, preencha todos os campos.');
+    const normalizedLogin = normalizeEmail(loginInput);
+
+    if (!normalizedLogin || !passwordInput) {
+      setErrorMsg('Informe e-mail e senha para entrar.');
       return;
     }
 
     const foundUser = allUsers.find(
-      (u) =>
-        (u.login.toLowerCase() === loginInput.toLowerCase() || u.matricula.toLowerCase() === loginInput.toLowerCase()) &&
-        u.senha === passwordInput
+      (user) =>
+        (normalizeEmail(user.login) === normalizedLogin || normalizeEmail(user.matricula) === normalizedLogin) &&
+        user.senha === passwordInput
     );
 
-    if (foundUser) {
-      if (!foundUser.ativo) {
-        setErrorMsg('Este usuário está inativo no sistema. Contate a supervisão.');
-        return;
-      }
+    if (!foundUser) {
+      setErrorMsg('E-mail ou senha incorretos.');
+      return;
+    }
+
+    if (!foundUser.ativo) {
+      setErrorMsg('Este cadastro está inativo. Procure o administrador da escala.');
+      return;
+    }
+
+    setErrorMsg('');
+    onLoginSuccess(foundUser);
+  };
+
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const normalizedEmail = normalizeEmail(registerEmail);
+
+    if (!registerName.trim() || !normalizedEmail || !registerPassword) {
+      setErrorMsg('Preencha nome, e-mail e senha.');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setErrorMsg('Informe um e-mail válido.');
+      return;
+    }
+
+    if (registerPassword.length < 6) {
+      setErrorMsg('A senha precisa ter pelo menos 6 caracteres.');
+      return;
+    }
+
+    const emailAlreadyExists = allUsers.some((user) => normalizeEmail(user.login) === normalizedEmail);
+    if (emailAlreadyExists) {
+      setErrorMsg('Já existe um cadastro com este e-mail.');
+      return;
+    }
+
+    const timestamp = Date.now();
+    const newUser: Usuario = {
+      id: `${isCreatingAdmin ? 'admin' : 'func'}-${timestamp}`,
+      nome: registerName.trim(),
+      matricula: `${isCreatingAdmin ? 'ADM' : 'FUNC'}-${timestamp}`,
+      login: normalizedEmail,
+      senha: registerPassword,
+      role: isCreatingAdmin ? UserRole.ENFERMEIRO : UserRole.MAQUEIRO,
+      turno: UserShift.MANHA,
+      tipo: StretcherType.NORMAL,
+      ativo: true,
+    };
+
+    try {
+      setIsSubmitting(true);
       setErrorMsg('');
-      onLoginSuccess(foundUser);
-    } else {
-      setErrorMsg('Usuário ou senha incorretos. Tente novamente.');
+      await onRegisterUser(newUser);
+      onLoginSuccess(newUser);
+    } catch (error) {
+      console.error('Erro ao criar cadastro:', error);
+      setErrorMsg('Não foi possível criar o cadastro agora. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleQuickLogin = (user: Usuario) => {
-    setLoginInput(user.login);
-    setPasswordInput(user.senha || '123');
-    setErrorMsg('');
-    onLoginSuccess(user);
-  };
+  const showLogin = authMode === 'login' && hasAdmin;
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center bg-gray-50 p-4 sm:p-6 md:p-8">
-      {/* Central Login Card */}
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden transform transition duration-300 hover:shadow-2xl">
-        {/* Banner Institucional */}
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         <div className="bg-[#005C9E] text-white p-6 text-center relative">
           <div className="absolute top-3 right-3 opacity-15">
             <Stethoscope className="w-24 h-24" />
@@ -61,178 +122,188 @@ export default function LoginScreen({ onLoginSuccess, allUsers }: LoginScreenPro
           <div className="inline-flex items-center justify-center bg-white/10 p-3 rounded-full mb-3 backdrop-blur-sm">
             <ShieldCheck className="w-8 h-8 text-[#FFB300]" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Portal Escala-Fácil</h2>
+          <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">Escala de Maqueiros</h2>
           <p className="text-xs text-blue-100 mt-1 font-medium">
-            Gestão Integrada de Plantões e Folgas Compensatórias
+            Acesso por e-mail para funcionários e administração da escala
           </p>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleLoginSubmit} className="p-6 sm:p-8 space-y-5" id="form-login" data-testid="login-form">
-          {errorMsg && (
-            <div className="bg-red-50 border-l-4 border-red-500 text-red-800 p-3 rounded text-xs font-semibold animate-shake">
-              {errorMsg}
-            </div>
-          )}
-
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider" htmlFor="login">
-              Login ou Matrícula
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <UserCheck className="w-4 h-4" />
-              </span>
-              <input
-                id="login"
-                type="text"
-                data-testid="login-input"
-                placeholder="Ex: ana.paula ou MQ001"
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
-                value={loginInput}
-                onChange={(e) => setLoginInput(e.target.value)}
-              />
-            </div>
+        {hasAdmin && (
+          <div className="grid grid-cols-2 bg-gray-50 border-b border-gray-100 p-2 gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('login');
+                setErrorMsg('');
+              }}
+              className={`py-2 rounded-lg text-xs font-bold uppercase transition ${
+                showLogin ? 'bg-[#005C9E] text-white shadow-sm' : 'text-gray-600 hover:bg-white'
+              }`}
+            >
+              Entrar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('register');
+                setErrorMsg('');
+              }}
+              className={`py-2 rounded-lg text-xs font-bold uppercase transition ${
+                !showLogin ? 'bg-[#005C9E] text-white shadow-sm' : 'text-gray-600 hover:bg-white'
+              }`}
+            >
+              Criar Cadastro
+            </button>
           </div>
+        )}
 
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider" htmlFor="password">
-              Senha de Acesso
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                <Lock className="w-4 h-4" />
-              </span>
-              <input
-                id="password"
-                type="password"
-                data-testid="password-input"
-                placeholder="••••••"
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-              />
+        {showLogin ? (
+          <form onSubmit={handleLoginSubmit} className="p-6 sm:p-8 space-y-5" id="form-login" data-testid="login-form">
+            {errorMsg && (
+              <div className="bg-red-50 border-l-4 border-red-500 text-red-800 p-3 rounded text-xs font-semibold">
+                {errorMsg}
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider" htmlFor="login">
+                E-mail
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <Mail className="w-4 h-4" />
+                </span>
+                <input
+                  id="login"
+                  type="email"
+                  data-testid="login-input"
+                  placeholder="seu.email@hospital.com"
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
+                  value={loginInput}
+                  onChange={(e) => setLoginInput(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            data-testid="login-button"
-            className="w-full bg-[#005C9E] hover:bg-[#004D85] text-white font-bold py-3 px-4 rounded-lg text-sm uppercase tracking-wider transition-all duration-150 shadow-md hover:shadow-lg active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
-          >
-            <Key className="w-4 h-4 text-[#FFB300]" />
-            Entrar no Sistema
-          </button>
-        </form>
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider" htmlFor="password">
+                Senha
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <Lock className="w-4 h-4" />
+                </span>
+                <input
+                  id="password"
+                  type="password"
+                  data-testid="password-input"
+                  placeholder="Sua senha"
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                />
+              </div>
+            </div>
 
-        {/* Footer info */}
+            <button
+              type="submit"
+              data-testid="login-button"
+              className="w-full bg-[#005C9E] hover:bg-[#004D85] text-white font-bold py-3 px-4 rounded-lg text-sm uppercase tracking-wider transition-all duration-150 shadow-md hover:shadow-lg active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+            >
+              <Key className="w-4 h-4 text-[#FFB300]" />
+              Entrar no Sistema
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleRegisterSubmit} className="p-6 sm:p-8 space-y-5" data-testid="register-form">
+            {errorMsg && (
+              <div className="bg-red-50 border-l-4 border-red-500 text-red-800 p-3 rounded text-xs font-semibold">
+                {errorMsg}
+              </div>
+            )}
+
+            <div className="bg-blue-50 border border-blue-100 text-blue-900 p-3 rounded-lg text-xs leading-relaxed">
+              {isCreatingAdmin
+                ? 'Primeiro acesso: crie o administrador usado pelos enfermeiros para liberar folgas e gerenciar funcionários.'
+                : 'Funcionário: crie seu cadastro com nome, e-mail e senha. O administrador poderá ajustar turno e regime depois.'}
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider" htmlFor="register-name">
+                Nome completo
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <UserCheck className="w-4 h-4" />
+                </span>
+                <input
+                  id="register-name"
+                  type="text"
+                  data-testid="register-name"
+                  placeholder="Nome do funcionário"
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
+                  value={registerName}
+                  onChange={(e) => setRegisterName(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider" htmlFor="register-email">
+                E-mail
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <Mail className="w-4 h-4" />
+                </span>
+                <input
+                  id="register-email"
+                  type="email"
+                  data-testid="register-email"
+                  placeholder="seu.email@hospital.com"
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
+                  value={registerEmail}
+                  onChange={(e) => setRegisterEmail(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider" htmlFor="register-password">
+                Senha
+              </label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                  <Lock className="w-4 h-4" />
+                </span>
+                <input
+                  id="register-password"
+                  type="password"
+                  data-testid="register-password"
+                  placeholder="Mínimo de 6 caracteres"
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#005C9E] focus:border-transparent transition-all"
+                  value={registerPassword}
+                  onChange={(e) => setRegisterPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              data-testid="register-button"
+              disabled={isSubmitting}
+              className="w-full bg-[#005C9E] hover:bg-[#004D85] disabled:bg-gray-400 text-white font-bold py-3 px-4 rounded-lg text-sm uppercase tracking-wider transition-all duration-150 shadow-md hover:shadow-lg active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+            >
+              <UserPlus className="w-4 h-4 text-[#FFB300]" />
+              {isCreatingAdmin ? 'Criar Admin dos Enfermeiros' : 'Criar Cadastro'}
+            </button>
+          </form>
+        )}
+
         <div className="bg-gray-50 border-t border-gray-100 px-6 py-4 text-center">
           <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-wider">
             Secretaria Municipal de Saúde do Rio de Janeiro
           </p>
-        </div>
-      </div>
-
-      {/* Quick Access Credentials Cheatsheet for Demonstrations */}
-      <div className="mt-8 w-full max-w-lg bg-blue-50/70 border border-blue-100 rounded-xl p-4 md:p-5 shadow-sm">
-        <div className="flex items-center gap-2 mb-3">
-          <HelpCircle className="w-5 h-5 text-[#005C9E]" />
-          <h3 className="font-sans font-bold text-sm text-blue-900">
-            Painel de Teste Rápido (Selecione um perfil para homologação)
-          </h3>
-        </div>
-        <p className="text-xs text-blue-800 mb-4 leading-relaxed">
-          Para facilitar a sua avaliação das regras de negócio e dashboards de ambos os perfis, clique em qualquer um dos botões abaixo para logar instantaneamente:
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Admin choice */}
-          <div className="bg-white p-3 rounded-lg border border-blue-200/50 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#005C9E] uppercase mb-1">
-                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                Supervisor / Enfermeiro
-              </div>
-              <p className="text-[11px] text-gray-500 mb-2">
-                Acesso total, cria maqueiros, configura as vagas de sábados, bloqueia datas e edita manual de plantões.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                const enf = allUsers.find((u) => u.role === UserRole.ENFERMEIRO);
-                if (enf) handleQuickLogin(enf);
-              }}
-              className="w-full bg-[#005C9E]/10 hover:bg-[#005C9E]/20 text-[#005C9E] font-bold text-xs py-1.5 px-3 rounded transition-all cursor-pointer"
-            >
-              Logar como Enfermeiro (Ana Paula)
-            </button>
-          </div>
-
-          {/* Normal Stretcher bearer morning choice */}
-          <div className="bg-white p-3 rounded-lg border border-blue-200/50 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#005C9E] uppercase mb-1">
-                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                Maqueiro Normal (Manhã)
-              </div>
-              <p className="text-[11px] text-gray-500 mb-2">
-                Seleciona 1 sábado do mês. Depois escolhe a folga compensatória em dia útil (após liberação das folgas).
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                const maq = allUsers.find((u) => u.role === UserRole.MAQUEIRO && u.matricula === 'MQ001');
-                if (maq) handleQuickLogin(maq);
-              }}
-              className="w-full bg-green-50/80 hover:bg-green-100 text-[#2E7D32] border border-green-200/50 font-bold text-xs py-1.5 px-3 rounded transition-all cursor-pointer"
-            >
-              Logar como Maqueiro (João - MQ001)
-            </button>
-          </div>
-
-          {/* Stretcher Tarde Fixo Saturday choice */}
-          <div className="bg-white p-3 rounded-lg border border-blue-200/50 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#005C9E] uppercase mb-1">
-                <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-                Maqueiro Fixo (Sábado Tarde)
-              </div>
-              <p className="text-[11px] text-gray-500 mb-2">
-                Trabalha fixo todo sábado de tarde e folga toda segunda. Tem escala pré-preenchida no calendário.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                const maq = allUsers.find((u) => u.matricula === 'MQ006');
-                if (maq) handleQuickLogin(maq);
-              }}
-              className="w-full bg-amber-50/80 hover:bg-amber-100 text-amber-800 border border-amber-200/50 font-bold text-xs py-1.5 px-3 rounded transition-all cursor-pointer"
-            >
-              Logar como Fixo (Carlos - MQ006)
-            </button>
-          </div>
-
-          {/* Normal Stretcher bearer afternoon choice */}
-          <div className="bg-white p-3 rounded-lg border border-blue-200/50 shadow-sm flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#005C9E] uppercase mb-1">
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                Maqueiro Normal (Tarde)
-              </div>
-              <p className="text-[11px] text-gray-500 mb-2">
-                Trabalha no turno da tarde (11h-20h), escolhe 1 sábado e folga em dia útil subsequente.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                const maq = allUsers.find((u) => u.role === UserRole.MAQUEIRO && u.matricula === 'MQ008');
-                if (maq) handleQuickLogin(maq);
-              }}
-              className="w-full bg-blue-50/80 hover:bg-blue-100 text-blue-800 border border-blue-200/50 font-bold text-xs py-1.5 px-3 rounded transition-all cursor-pointer"
-            >
-              Logar como Maqueiro (Bruno - MQ008)
-            </button>
-          </div>
         </div>
       </div>
     </div>

@@ -36,8 +36,8 @@ test.describe('Dashboard do Enfermeiro', () => {
   test('deve buscar maqueiro no calendário', async ({ page }) => {
     const calendar = page.getByTestId('calendar-view');
 
-    await calendar.getByTestId('calendar-search').fill('Jo');
-    await expect(calendar.getByText(/João|JoÃ£o/)).toBeVisible();
+    await calendar.getByTestId('calendar-search').fill('E2E');
+    await expect(calendar.getByText('E2E Maqueiro Fixo').first()).toBeVisible();
   });
 
   test('deve navegar entre meses', async ({ page }) => {
@@ -52,6 +52,6 @@ test.describe('Dashboard do Enfermeiro', () => {
     await page.getByTestId('tab-configs').click();
 
     await expect(page.getByText('Vagas de maqueiros normais por Sábado')).toBeVisible();
-    await expect(page.getByText('Liberação Manual Antecipada de Folgas')).toBeVisible();
+    await expect(page.getByText('Liberação Manual de Folgas')).toBeVisible();
   });
 });

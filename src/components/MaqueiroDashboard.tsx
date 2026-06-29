@@ -138,7 +138,7 @@ export default function MaqueiroDashboard({
       return;
     }
     if (!isFolgasUnlocked) {
-      alert('A escolha de folgas ainda não foi liberada pelo supervisor.');
+      alert('A escolha de folgas ainda não foi liberada pelo admin.');
       return;
     }
     if (isDateBlockedByNurse(folgaDate)) {
@@ -207,7 +207,7 @@ export default function MaqueiroDashboard({
               ) : !isFolgasUnlocked ? (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center gap-2 text-xs font-bold text-amber-800">
                   <Lock className="w-4.5 h-4.5 text-amber-600 shrink-0" />
-                  <span className="flex-1 leading-snug">Bloqueado. Aguarde liberação da supervisão.</span>
+                  <span className="flex-1 leading-snug">Bloqueado. Aguarde o admin liberar a escolha.</span>
                 </div>
               ) : chosenFolga ? (
                 <div className="bg-green-50 border border-green-200 rounded-xl p-3 flex items-center justify-between text-xs font-bold text-green-900">
@@ -256,7 +256,7 @@ export default function MaqueiroDashboard({
                   <p>Sábado de plantão agendado.</p>
                   <p className="text-[11px] text-gray-500 leading-snug">
                     {!isFolgasUnlocked
-                      ? 'As folgas compensatórias serão liberadas quando todos os maqueiros selecionarem seus sábados.'
+                      ? 'As folgas compensatórias serão liberadas pelo admin depois da etapa de escolha dos sábados.'
                       : 'Selecione agora a sua folga compensatória nos botões de dias úteis.'}
                   </p>
                   <button
@@ -356,7 +356,7 @@ export default function MaqueiroDashboard({
                   Painel de folgas bloqueado
                 </div>
                 <p>
-                  As folgas compensatórias só serão liberadas para escolha após todos os maqueiros normais preencherem os sábados de plantão.
+                  As folgas compensatórias só serão liberadas para escolha quando o admin habilitar esta etapa.
                 </p>
                 <div className="bg-white/80 p-2 rounded text-[11px] text-gray-600 font-semibold border border-amber-200/50">
                   Status de Sábados: {countSaturdaysChosen} de {usuarios.filter(u => u.role === UserRole.MAQUEIRO && u.tipo === StretcherType.NORMAL && u.ativo).length} preenchidos.
